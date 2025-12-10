@@ -1,0 +1,4635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM3D Transparent Gallery</title>
+
+    <!-- Import model-viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.3em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.05em;
+        }
+
+        .legend {
+            background: #e7f5ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .legend h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .legend ul {
+            padding-left: 20px;
+        }
+
+        .legend li {
+            color: #666;
+            padding: 4px 0;
+        }
+
+        .result-group {
+            margin-bottom: 40px;
+        }
+
+        .part-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .result-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .group-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 320px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .placeholder {
+            width: 100%;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+            color: #adb5bd;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stats {
+            text-align: center;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        @media (max-width: 992px) {
+            .part-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SAM3D Transparent Gallery</h1>
+        <p class="subtitle">Origin transparent PNGs, per-part PNGs, and their matching <code>splat_*.glb</code> models</p>
+
+        <div class="legend">
+            <h3>Layout</h3>
+            <ul>
+                <li>Column 1: Original transparent PNG (repeated for every part row)</li>
+                <li>Column 2: Part-specific transparent PNG with its descriptive label from name_mapping.txt</li>
+                <li>Column 3: Matching SAM3D splat GLB rendered via model-viewer</li>
+            </ul>
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 0_transparency
+                <div class="group-label">Parts: 9</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black bowler hat on top of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/0_transparent.png" alt="Black bowler hat on top of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_0.glb"
+                        alt="Splat model Black bowler hat on top of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black mustache below the nose</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/1_transparent.png" alt="Black mustache below the nose">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_1.glb"
+                        alt="Splat model Black mustache below the nose"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown potato-shaped main body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/2_transparent.png" alt="Brown potato-shaped main body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_2.glb"
+                        alt="Splat model Brown potato-shaped main body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Orange triangular nose in the center of the face</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/3_transparent.png" alt="Orange triangular nose in the center of the face">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_3.glb"
+                        alt="Splat model Orange triangular nose in the center of the face"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Red mouth with white teeth below the mustache</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/4_transparent.png" alt="Red mouth with white teeth below the mustache">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_4.glb"
+                        alt="Splat model Red mouth with white teeth below the mustache"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two blue shoes at the bottom of the body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/5_transparent.png" alt="Two blue shoes at the bottom of the body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_5.glb"
+                        alt="Splat model Two blue shoes at the bottom of the body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two pink ears on the sides of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/6_transparent.png" alt="Two pink ears on the sides of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_6.glb"
+                        alt="Splat model Two pink ears on the sides of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two white arms with hands on the sides of the body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/7_transparent.png" alt="Two white arms with hands on the sides of the body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_7.glb"
+                        alt="Splat model Two white arms with hands on the sides of the body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/0_transparent.png" alt="0_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two white eyes with black pupils in the upper face</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/0_transparency/8_transparent.png" alt="Two white eyes with black pupils in the upper face">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/0_transparency/splat_8.glb"
+                        alt="Splat model Two white eyes with black pupils in the upper face"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 1_transparency
+                <div class="group-label">Parts: 11</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Blue pants forming the pelvis and legs</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/0_transparent.png" alt="Blue pants forming the pelvis and legs">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_0.glb"
+                        alt="Splat model Blue pants forming the pelvis and legs"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown belt with gold buckle and holster</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/1_transparent.png" alt="Brown belt with gold buckle and holster">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_1.glb"
+                        alt="Splat model Brown belt with gold buckle and holster"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown cowboy hat on the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/2_transparent.png" alt="Brown cowboy hat on the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_2.glb"
+                        alt="Splat model Brown cowboy hat on the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Gold star-shaped sheriff badge on the vest</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/3_transparent.png" alt="Gold star-shaped sheriff badge on the vest">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_3.glb"
+                        alt="Splat model Gold star-shaped sheriff badge on the vest"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Head with hair and facial features</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/4_transparent.png" alt="Head with hair and facial features">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_4.glb"
+                        alt="Splat model Head with hair and facial features"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left arm with hand</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/5_transparent.png" alt="Left arm with hand">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_5.glb"
+                        alt="Splat model Left arm with hand"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left brown cowboy boot</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/6_transparent.png" alt="Left brown cowboy boot">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_6.glb"
+                        alt="Splat model Left brown cowboy boot"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Red bandana around the neck</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/7_transparent.png" alt="Red bandana around the neck">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_7.glb"
+                        alt="Splat model Red bandana around the neck"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right arm with hand</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/8_transparent.png" alt="Right arm with hand">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_8.glb"
+                        alt="Splat model Right arm with hand"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right brown cowboy boot</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/9_transparent.png" alt="Right brown cowboy boot">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_9.glb"
+                        alt="Splat model Right brown cowboy boot"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/1_transparent.png" alt="1_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Torso with yellow shirt and cow-print vest</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/1_transparency/10_transparent.png" alt="Torso with yellow shirt and cow-print vest">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/1_transparency/splat_10.glb"
+                        alt="Splat model Torso with yellow shirt and cow-print vest"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 2_transparency
+                <div class="group-label">Parts: 3</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/2_transparent.png" alt="2_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Metal hammer head, located at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/2_transparency/0_transparent.png" alt="Metal hammer head, located at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/2_transparency/splat_0.glb"
+                        alt="Splat model Metal hammer head, located at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/2_transparent.png" alt="2_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Paper brand label, affixed to the upper part of the handle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/2_transparency/1_transparent.png" alt="Paper brand label, affixed to the upper part of the handle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/2_transparency/splat_1.glb"
+                        alt="Splat model Paper brand label, affixed to the upper part of the handle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/2_transparent.png" alt="2_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Wooden handle, the long gripping part</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/2_transparency/2_transparent.png" alt="Wooden handle, the long gripping part">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/2_transparency/splat_2.glb"
+                        alt="Splat model Wooden handle, the long gripping part"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 3_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black power cord</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/0_transparent.png" alt="Black power cord">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_0.glb"
+                        alt="Splat model Black power cord"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Flexible golden gooseneck arm</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/1_transparent.png" alt="Flexible golden gooseneck arm">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_1.glb"
+                        alt="Splat model Flexible golden gooseneck arm"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Golden toggle switch</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/2_transparent.png" alt="Golden toggle switch">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_2.glb"
+                        alt="Splat model Golden toggle switch"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Red conical lampshade</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/3_transparent.png" alt="Red conical lampshade">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_3.glb"
+                        alt="Splat model Red conical lampshade"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Rigid golden stem</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/4_transparent.png" alt="Rigid golden stem">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_4.glb"
+                        alt="Splat model Rigid golden stem"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/3_transparent.png" alt="3_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Round red base</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/3_transparency/5_transparent.png" alt="Round red base">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/3_transparency/splat_5.glb"
+                        alt="Splat model Round red base"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 4_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black flexible waist section</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/0_transparent.png" alt="Black flexible waist section">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_0.glb"
+                        alt="Splat model Black flexible waist section"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black ovoid head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/1_transparent.png" alt="Black ovoid head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_1.glb"
+                        alt="Splat model Black ovoid head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black shoulder joint</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/2_transparent.png" alt="Black shoulder joint">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_2.glb"
+                        alt="Splat model Black shoulder joint"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Orange abdominal plate</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/3_transparent.png" alt="Orange abdominal plate">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_3.glb"
+                        alt="Splat model Orange abdominal plate"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Orange chest plate</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/4_transparent.png" alt="Orange chest plate">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_4.glb"
+                        alt="Splat model Orange chest plate"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/4_transparent.png" alt="4_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Orange pelvic armor</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/4_transparency/5_transparent.png" alt="Orange pelvic armor">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/4_transparency/splat_5.glb"
+                        alt="Splat model Orange pelvic armor"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 5_transparency
+                <div class="group-label">Parts: 3</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/5_transparent.png" alt="5_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Four legs, long rectangular wooden posts angled outwards</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/5_transparency/0_transparent.png" alt="Four legs, long rectangular wooden posts angled outwards">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/5_transparency/splat_0.glb"
+                        alt="Splat model Four legs, long rectangular wooden posts angled outwards"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/5_transparent.png" alt="5_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Top seat, a thick, slightly curved wooden plank</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/5_transparency/1_transparent.png" alt="Top seat, a thick, slightly curved wooden plank">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/5_transparency/splat_1.glb"
+                        alt="Splat model Top seat, a thick, slightly curved wooden plank"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/5_transparent.png" alt="5_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two horizontal stretchers, curved wooden bars connecting the front and back pairs of legs</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/5_transparency/2_transparent.png" alt="Two horizontal stretchers, curved wooden bars connecting the front and back pairs of legs">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/5_transparency/splat_2.glb"
+                        alt="Splat model Two horizontal stretchers, curved wooden bars connecting the front and back pairs of legs"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 6_transparency
+                <div class="group-label">Parts: 5</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/6_transparent.png" alt="6_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Ornate patinated metal bow at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/6_transparency/0_transparent.png" alt="Ornate patinated metal bow at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/6_transparency/splat_0.glb"
+                        alt="Splat model Ornate patinated metal bow at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/6_transparent.png" alt="6_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Patinated metal key bit with complex cutouts at the bottom</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/6_transparency/1_transparent.png" alt="Patinated metal key bit with complex cutouts at the bottom">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/6_transparency/splat_1.glb"
+                        alt="Splat model Patinated metal key bit with complex cutouts at the bottom"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/6_transparent.png" alt="6_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Polished brass cylindrical collar above the bit</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/6_transparency/2_transparent.png" alt="Polished brass cylindrical collar above the bit">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/6_transparency/splat_2.glb"
+                        alt="Splat model Polished brass cylindrical collar above the bit"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/6_transparent.png" alt="6_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Polished brass spherical collar below the bow</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/6_transparency/3_transparent.png" alt="Polished brass spherical collar below the bow">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/6_transparency/splat_3.glb"
+                        alt="Splat model Polished brass spherical collar below the bow"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/6_transparent.png" alt="6_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Twisted patinated metal shank</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/6_transparency/4_transparent.png" alt="Twisted patinated metal shank">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/6_transparency/splat_4.glb"
+                        alt="Splat model Twisted patinated metal shank"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 7_transparency
+                <div class="group-label">Parts: 5</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/7_transparent.png" alt="7_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Glass globe, a transparent bulb-shaped enclosure in the center</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/7_transparency/0_transparent.png" alt="Glass globe, a transparent bulb-shaped enclosure in the center">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/7_transparency/splat_0.glb"
+                        alt="Splat model Glass globe, a transparent bulb-shaped enclosure in the center"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/7_transparent.png" alt="7_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Hanging loop, a curved metal piece with a ring at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/7_transparency/1_transparent.png" alt="Hanging loop, a curved metal piece with a ring at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/7_transparency/splat_1.glb"
+                        alt="Splat model Hanging loop, a curved metal piece with a ring at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/7_transparent.png" alt="7_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Horizontal cage rings, a set of circular metal rings reinforcing the cage</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/7_transparency/2_transparent.png" alt="Horizontal cage rings, a set of circular metal rings reinforcing the cage">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/7_transparency/splat_2.glb"
+                        alt="Splat model Horizontal cage rings, a set of circular metal rings reinforcing the cage"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/7_transparent.png" alt="7_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Top cover, a conical metal piece below the hanging loop</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/7_transparency/3_transparent.png" alt="Top cover, a conical metal piece below the hanging loop">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/7_transparency/splat_3.glb"
+                        alt="Splat model Top cover, a conical metal piece below the hanging loop"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/7_transparent.png" alt="7_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Vertical cage bars, a set of curved metal rods forming the main cage</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/7_transparency/4_transparent.png" alt="Vertical cage bars, a set of curved metal rods forming the main cage">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/7_transparency/splat_4.glb"
+                        alt="Splat model Vertical cage bars, a set of curved metal rods forming the main cage"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 8_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown leg assembly, forming the lower body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/0_transparent.png" alt="Brown leg assembly, forming the lower body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_0.glb"
+                        alt="Splat model Brown leg assembly, forming the lower body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown pointed hat, located on top of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/1_transparent.png" alt="Brown pointed hat, located on top of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_1.glb"
+                        alt="Splat model Brown pointed hat, located on top of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Brown torso with printed details, forming the upper body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/2_transparent.png" alt="Brown torso with printed details, forming the upper body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_2.glb"
+                        alt="Splat model Brown torso with printed details, forming the upper body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Tan cylindrical head with a printed face, located below the hat</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/3_transparent.png" alt="Tan cylindrical head with a printed face, located below the hat">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_3.glb"
+                        alt="Splat model Tan cylindrical head with a printed face, located below the hat"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two brown arms, attached to the sides of the torso</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/4_transparent.png" alt="Two brown arms, attached to the sides of the torso">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_4.glb"
+                        alt="Splat model Two brown arms, attached to the sides of the torso"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/8_transparent.png" alt="8_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two white C-shaped hands, attached to the ends of the arms</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/8_transparency/5_transparent.png" alt="Two white C-shaped hands, attached to the ends of the arms">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/8_transparency/splat_5.glb"
+                        alt="Splat model Two white C-shaped hands, attached to the ends of the arms"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 9_transparency
+                <div class="group-label">Parts: 9</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Central hip piece</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/0_transparent.png" alt="Central hip piece">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_0.glb"
+                        alt="Splat model Central hip piece"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Cylindrical head at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/1_transparent.png" alt="Cylindrical head at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_1.glb"
+                        alt="Splat model Cylindrical head at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left C-shaped hand</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/2_transparent.png" alt="Left C-shaped hand">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_2.glb"
+                        alt="Splat model Left C-shaped hand"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left L-shaped arm</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/3_transparent.png" alt="Left L-shaped arm">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_3.glb"
+                        alt="Splat model Left L-shaped arm"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left rectangular leg at the bottom</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/4_transparent.png" alt="Left rectangular leg at the bottom">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_4.glb"
+                        alt="Splat model Left rectangular leg at the bottom"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right C-shaped hand</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/5_transparent.png" alt="Right C-shaped hand">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_5.glb"
+                        alt="Splat model Right C-shaped hand"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right L-shaped arm</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/6_transparent.png" alt="Right L-shaped arm">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_6.glb"
+                        alt="Splat model Right L-shaped arm"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right rectangular leg at the bottom</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/7_transparent.png" alt="Right rectangular leg at the bottom">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_7.glb"
+                        alt="Splat model Right rectangular leg at the bottom"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/9_transparent.png" alt="9_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Trapezoidal torso in the middle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/9_transparency/8_transparent.png" alt="Trapezoidal torso in the middle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/9_transparency/splat_8.glb"
+                        alt="Splat model Trapezoidal torso in the middle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 10_transparency
+                <div class="group-label">Parts: 2</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/10_transparent.png" alt="10_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left vertical rail, a long rectangular bar</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/10_transparency/0_transparent.png" alt="Left vertical rail, a long rectangular bar">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/10_transparency/splat_0.glb"
+                        alt="Splat model Left vertical rail, a long rectangular bar"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/10_transparent.png" alt="10_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left vertical rail, long rectangular bar</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/10_transparency/1_transparent.png" alt="Left vertical rail, long rectangular bar">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/10_transparency/splat_1.glb"
+                        alt="Splat model Left vertical rail, long rectangular bar"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 11_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Seat frame, the horizontal structure connecting the legs beneath the seat</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/0_transparent.png" alt="Seat frame, the horizontal structure connecting the legs beneath the seat">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_0.glb"
+                        alt="Splat model Seat frame, the horizontal structure connecting the legs beneath the seat"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Seat, the cushioned horizontal surface for sitting</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/1_transparent.png" alt="Seat, the cushioned horizontal surface for sitting">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_1.glb"
+                        alt="Splat model Seat, the cushioned horizontal surface for sitting"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Six vertical slats, thin bars forming the back support</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/2_transparent.png" alt="Six vertical slats, thin bars forming the back support">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_2.glb"
+                        alt="Splat model Six vertical slats, thin bars forming the back support"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Top rail, the horizontal crosspiece at the top of the backrest</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/3_transparent.png" alt="Top rail, the horizontal crosspiece at the top of the backrest">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_3.glb"
+                        alt="Splat model Top rail, the horizontal crosspiece at the top of the backrest"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two front legs, vertical supports at the front</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/4_transparent.png" alt="Two front legs, vertical supports at the front">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_4.glb"
+                        alt="Splat model Two front legs, vertical supports at the front"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/11_transparent.png" alt="11_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two rear legs, vertical supports at the back extending to form the backrest frame</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/11_transparency/5_transparent.png" alt="Two rear legs, vertical supports at the back extending to form the backrest frame">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/11_transparency/splat_5.glb"
+                        alt="Splat model Two rear legs, vertical supports at the back extending to form the backrest frame"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 12_transparency
+                <div class="group-label">Parts: 3</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/12_transparent.png" alt="12_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two red side boosters attached to the upper fuselage</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/12_transparency/0_transparent.png" alt="Two red side boosters attached to the upper fuselage">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/12_transparency/splat_0.glb"
+                        alt="Splat model Two red side boosters attached to the upper fuselage"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/12_transparent.png" alt="12_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">White nose cone at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/12_transparency/1_transparent.png" alt="White nose cone at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/12_transparency/splat_1.glb"
+                        alt="Splat model White nose cone at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/12_transparent.png" alt="12_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">White upper fuselage section with a porthole</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/12_transparency/2_transparent.png" alt="White upper fuselage section with a porthole">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/12_transparency/splat_2.glb"
+                        alt="Splat model White upper fuselage section with a porthole"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 13_transparency
+                <div class="group-label">Parts: 4</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/13_transparent.png" alt="13_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Central wooden roller cylinder</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/13_transparency/0_transparent.png" alt="Central wooden roller cylinder">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/13_transparency/splat_0.glb"
+                        alt="Splat model Central wooden roller cylinder"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/13_transparent.png" alt="13_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Internal metal axle connecting the handles</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/13_transparency/1_transparent.png" alt="Internal metal axle connecting the handles">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/13_transparency/splat_1.glb"
+                        alt="Splat model Internal metal axle connecting the handles"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/13_transparent.png" alt="13_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Metal bearings between the cylinder and handles</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/13_transparency/2_transparent.png" alt="Metal bearings between the cylinder and handles">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/13_transparency/splat_2.glb"
+                        alt="Splat model Metal bearings between the cylinder and handles"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/13_transparent.png" alt="13_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two wooden handles on each end</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/13_transparency/3_transparent.png" alt="Two wooden handles on each end">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/13_transparency/splat_3.glb"
+                        alt="Splat model Two wooden handles on each end"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 14_transparency
+                <div class="group-label">Parts: 13</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Circular ear piece on the left side of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/0_transparent.png" alt="Circular ear piece on the left side of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_0.glb"
+                        alt="Splat model Circular ear piece on the left side of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Circular vent on top of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/1_transparent.png" alt="Circular vent on top of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_1.glb"
+                        alt="Splat model Circular vent on top of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Flexible ribbed neck joint</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/2_transparent.png" alt="Flexible ribbed neck joint">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_2.glb"
+                        alt="Splat model Flexible ribbed neck joint"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Grey cube-shaped torso</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/3_transparent.png" alt="Grey cube-shaped torso">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_3.glb"
+                        alt="Splat model Grey cube-shaped torso"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Light blue cube-shaped head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/4_transparent.png" alt="Light blue cube-shaped head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_4.glb"
+                        alt="Splat model Light blue cube-shaped head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Red-tipped antenna on the top-left of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/5_transparent.png" alt="Red-tipped antenna on the top-left of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_5.glb"
+                        alt="Splat model Red-tipped antenna on the top-left of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Silver chest control panel with three blue and two round buttons</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/6_transparent.png" alt="Silver chest control panel with three blue and two round buttons">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_6.glb"
+                        alt="Splat model Silver chest control panel with three blue and two round buttons"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Silver rectangular faceplate with two round eyes</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/7_transparent.png" alt="Silver rectangular faceplate with two round eyes">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_7.glb"
+                        alt="Splat model Silver rectangular faceplate with two round eyes"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two cylindrical blue and orange feet</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/8_transparent.png" alt="Two cylindrical blue and orange feet">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_8.glb"
+                        alt="Splat model Two cylindrical blue and orange feet"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two grey C-shaped hands</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/9_transparent.png" alt="Two grey C-shaped hands">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_9.glb"
+                        alt="Splat model Two grey C-shaped hands"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two light blue dome-shaped shoulder pads</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/10_transparent.png" alt="Two light blue dome-shaped shoulder pads">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_10.glb"
+                        alt="Splat model Two light blue dome-shaped shoulder pads"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two segmented arms with orange joints</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/11_transparent.png" alt="Two segmented arms with orange joints">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_11.glb"
+                        alt="Splat model Two segmented arms with orange joints"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/14_transparent.png" alt="14_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two segmented legs with orange joints</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/14_transparency/12_transparent.png" alt="Two segmented legs with orange joints">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/14_transparency/splat_12.glb"
+                        alt="Splat model Two segmented legs with orange joints"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 15_transparency
+                <div class="group-label">Parts: 5</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/15_transparent.png" alt="15_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Central cage composed of six vertical bars and a horizontal ring</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/15_transparency/0_transparent.png" alt="Central cage composed of six vertical bars and a horizontal ring">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/15_transparency/splat_0.glb"
+                        alt="Splat model Central cage composed of six vertical bars and a horizontal ring"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/15_transparent.png" alt="15_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Internal glowing purple light source</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/15_transparency/1_transparent.png" alt="Internal glowing purple light source">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/15_transparency/splat_1.glb"
+                        alt="Splat model Internal glowing purple light source"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/15_transparent.png" alt="15_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Lower hexagonal stone base</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/15_transparency/2_transparent.png" alt="Lower hexagonal stone base">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/15_transparency/splat_2.glb"
+                        alt="Splat model Lower hexagonal stone base"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/15_transparent.png" alt="15_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Top curved handle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/15_transparency/3_transparent.png" alt="Top curved handle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/15_transparency/splat_3.glb"
+                        alt="Splat model Top curved handle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/15_transparent.png" alt="15_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Upper hexagonal stone cap</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/15_transparency/4_transparent.png" alt="Upper hexagonal stone cap">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/15_transparency/splat_4.glb"
+                        alt="Splat model Upper hexagonal stone cap"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 16_transparency
+                <div class="group-label">Parts: 7</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Black circular record on the turntable</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/0_transparent.png" alt="Black circular record on the turntable">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_0.glb"
+                        alt="Splat model Black circular record on the turntable"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Circular decorative knob on the front of the cabinet</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/1_transparent.png" alt="Circular decorative knob on the front of the cabinet">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_1.glb"
+                        alt="Splat model Circular decorative knob on the front of the cabinet"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Circular turntable platter beneath the record</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/2_transparent.png" alt="Circular turntable platter beneath the record">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_2.glb"
+                        alt="Splat model Circular turntable platter beneath the record"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Copper-colored tonearm assembly connecting the horn to the turntable</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/3_transparent.png" alt="Copper-colored tonearm assembly connecting the horn to the turntable">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_3.glb"
+                        alt="Splat model Copper-colored tonearm assembly connecting the horn to the turntable"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Large, flared copper-colored horn at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/4_transparent.png" alt="Large, flared copper-colored horn at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_4.glb"
+                        alt="Splat model Large, flared copper-colored horn at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Main rectangular wooden cabinet</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/5_transparent.png" alt="Main rectangular wooden cabinet">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_5.glb"
+                        alt="Splat model Main rectangular wooden cabinet"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/16_transparent.png" alt="16_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Stepped wooden base supporting the cabinet</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/16_transparency/6_transparent.png" alt="Stepped wooden base supporting the cabinet">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/16_transparency/splat_6.glb"
+                        alt="Splat model Stepped wooden base supporting the cabinet"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 17_transparency
+                <div class="group-label">Parts: 7</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Bottom horizontal panel</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/0_transparent.png" alt="Bottom horizontal panel">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_0.glb"
+                        alt="Splat model Bottom horizontal panel"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left vertical side panel with rounded front corners</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/1_transparent.png" alt="Left vertical side panel with rounded front corners">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_1.glb"
+                        alt="Splat model Left vertical side panel with rounded front corners"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Multiple metallic fasteners</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/2_transparent.png" alt="Multiple metallic fasteners">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_2.glb"
+                        alt="Splat model Multiple metallic fasteners"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right vertical side panel with rounded front corners</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/3_transparent.png" alt="Right vertical side panel with rounded front corners">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_3.glb"
+                        alt="Splat model Right vertical side panel with rounded front corners"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Thin rectangular back panel</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/4_transparent.png" alt="Thin rectangular back panel">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_4.glb"
+                        alt="Splat model Thin rectangular back panel"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Top horizontal panel</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/5_transparent.png" alt="Top horizontal panel">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_5.glb"
+                        alt="Splat model Top horizontal panel"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/17_transparent.png" alt="17_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two middle horizontal shelves</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/17_transparency/6_transparent.png" alt="Two middle horizontal shelves">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/17_transparency/splat_6.glb"
+                        alt="Splat model Two middle horizontal shelves"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 18_transparency
+                <div class="group-label">Parts: 3</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/18_transparent.png" alt="18_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Main metal body, comprising the shaft and the slotted head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/18_transparency/0_transparent.png" alt="Main metal body, comprising the shaft and the slotted head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/18_transparency/splat_0.glb"
+                        alt="Splat model Main metal body, comprising the shaft and the slotted head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/18_transparent.png" alt="18_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two metal rivets, securing the handle to the metal body</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/18_transparency/1_transparent.png" alt="Two metal rivets, securing the handle to the metal body">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/18_transparency/splat_1.glb"
+                        alt="Splat model Two metal rivets, securing the handle to the metal body"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/18_transparent.png" alt="18_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Wooden handle, the top grip with a hanging hole</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/18_transparency/2_transparent.png" alt="Wooden handle, the top grip with a hanging hole">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/18_transparency/splat_2.glb"
+                        alt="Splat model Wooden handle, the top grip with a hanging hole"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 19_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Antennae, two small cylinders on top of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/0_transparent.png" alt="Antennae, two small cylinders on top of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_0.glb"
+                        alt="Splat model Antennae, two small cylinders on top of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Body, the lower cylindrical section with integrated legs</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/1_transparent.png" alt="Body, the lower cylindrical section with integrated legs">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_1.glb"
+                        alt="Splat model Body, the lower cylindrical section with integrated legs"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Eyes, two small black circular inserts on the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/2_transparent.png" alt="Eyes, two small black circular inserts on the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_2.glb"
+                        alt="Splat model Eyes, two small black circular inserts on the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Head, the upper dome-shaped section</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/3_transparent.png" alt="Head, the upper dome-shaped section">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_3.glb"
+                        alt="Splat model Head, the upper dome-shaped section"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Left arm, a cylindrical limb on the body's right side</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/4_transparent.png" alt="Left arm, a cylindrical limb on the body's right side">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_4.glb"
+                        alt="Splat model Left arm, a cylindrical limb on the body's right side"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/19_transparent.png" alt="19_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Right arm, a cylindrical limb on the body's left side</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/19_transparency/5_transparent.png" alt="Right arm, a cylindrical limb on the body's left side">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/19_transparency/splat_5.glb"
+                        alt="Splat model Right arm, a cylindrical limb on the body's left side"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 20_transparency
+                <div class="group-label">Parts: 5</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/20_transparent.png" alt="20_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Orange fin-like crest running down the center of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/20_transparency/0_transparent.png" alt="Orange fin-like crest running down the center of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/20_transparency/splat_0.glb"
+                        alt="Splat model Orange fin-like crest running down the center of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/20_transparent.png" alt="20_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Red main body, including the head, torso, legs, and tail</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/20_transparency/1_transparent.png" alt="Red main body, including the head, torso, legs, and tail">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/20_transparency/splat_1.glb"
+                        alt="Splat model Red main body, including the head, torso, legs, and tail"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/20_transparent.png" alt="20_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two large, curved horns with dark brown and cream-colored sections on the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/20_transparency/2_transparent.png" alt="Two large, curved horns with dark brown and cream-colored sections on the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/20_transparency/splat_2.glb"
+                        alt="Splat model Two large, curved horns with dark brown and cream-colored sections on the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/20_transparent.png" alt="20_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two small red fins on the sides of the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/20_transparency/3_transparent.png" alt="Two small red fins on the sides of the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/20_transparency/splat_3.glb"
+                        alt="Splat model Two small red fins on the sides of the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/20_transparent.png" alt="20_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Yellow segmented belly plates on the chest and stomach</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/20_transparency/4_transparent.png" alt="Yellow segmented belly plates on the chest and stomach">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/20_transparency/splat_4.glb"
+                        alt="Splat model Yellow segmented belly plates on the chest and stomach"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 21_transparency
+                <div class="group-label">Parts: 3</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/21_transparent.png" alt="21_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Convex glass screen</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/21_transparency/0_transparent.png" alt="Convex glass screen">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/21_transparency/splat_0.glb"
+                        alt="Splat model Convex glass screen"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/21_transparent.png" alt="21_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Copper-colored front frame surrounding the screen and controls</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/21_transparency/1_transparent.png" alt="Copper-colored front frame surrounding the screen and controls">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/21_transparency/splat_1.glb"
+                        alt="Splat model Copper-colored front frame surrounding the screen and controls"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/21_transparent.png" alt="21_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Main dark grey casing with rounded corners</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/21_transparency/2_transparent.png" alt="Main dark grey casing with rounded corners">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/21_transparency/splat_2.glb"
+                        alt="Splat model Main dark grey casing with rounded corners"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result-group">
+            <div class="result-name">
+                Folder: 22_transparency
+                <div class="group-label">Parts: 6</div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Cylindrical metal collar connecting the head and the handle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/0_transparent.png" alt="Cylindrical metal collar connecting the head and the handle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_0.glb"
+                        alt="Splat model Cylindrical metal collar connecting the head and the handle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Cylindrical metal pommel at the bottom of the handle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/1_transparent.png" alt="Cylindrical metal pommel at the bottom of the handle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_1.glb"
+                        alt="Splat model Cylindrical metal pommel at the bottom of the handle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Cylindrical wooden handle in the middle</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/2_transparent.png" alt="Cylindrical wooden handle in the middle">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_2.glb"
+                        alt="Splat model Cylindrical wooden handle in the middle"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Four metal rivets fastening each strap to the head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/3_transparent.png" alt="Four metal rivets fastening each strap to the head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_3.glb"
+                        alt="Splat model Four metal rivets fastening each strap to the head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Large rectangular stone hammer head at the top</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/4_transparent.png" alt="Large rectangular stone hammer head at the top">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_4.glb"
+                        alt="Splat model Large rectangular stone hammer head at the top"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+            <div class="part-row">
+                <div class="cell">
+                    <div class="result-label">Origin Image</div>
+
+                    <div class="image-container">
+                        <img src="exp_imag_transparent/22_transparent.png" alt="22_transparency origin">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Two leather straps wrapped around the hammer head</div>
+
+                    <div class="image-container">
+                        <img src="2d-test-pipeline/22_transparency/5_transparent.png" alt="Two leather straps wrapped around the hammer head">
+                    </div>
+
+                </div>
+                <div class="cell">
+                    <div class="result-label">Splat GLB</div>
+
+                    <model-viewer
+                        src="2d-test-pipeline/22_transparency/splat_5.glb"
+                        alt="Splat model Two leather straps wrapped around the hammer head"
+                        camera-controls
+                        touch-action="pan-y"
+                        auto-rotate
+                        shadow-intensity="1">
+                    </model-viewer>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="stats">
+            <p>Total objects: <strong>23</strong> · Total parts: <strong>133</strong></p>
+            <p style="margin-top: 10px; color: #999; font-size: 0.9em;">
+                Generated with build_site.py · SAM3D transparent gallery
+            </p>
+        </div>
+    </div>
+</body>
+</html>
