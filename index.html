@@ -33,32 +33,6 @@
   section{margin-top:74px}
   p{margin:14px 0 0;text-wrap:pretty}
 
-  /* ── architecture: three stacked stages, each one line ── */
-  .stage{display:grid;grid-template-columns:15ch 1fr;gap:22px;align-items:start;
-         padding:22px 0;border-top:1px solid var(--line)}
-  .stage:last-of-type{border-bottom:1px solid var(--line)}
-  .stage-h{font:500 12px/1.45 ui-monospace,Menlo,monospace;letter-spacing:.1em;
-           text-transform:uppercase;color:var(--ink);padding-top:9px}
-  .stage-h small{display:block;text-transform:none;letter-spacing:0;color:var(--dim);
-                 font-size:11px;margin-top:5px}
-  .chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .b{font:500 12.5px/1.35 ui-monospace,Menlo,monospace;padding:9px 12px;border-radius:5px;
-     border:1px solid var(--line);background:#12161A;white-space:nowrap}
-  .b.fz{border-style:dashed;border-color:#3B4248;color:var(--frozen)}
-  .b.tr{border-color:var(--accent);background:#122020;color:var(--accent)}
-  .b.pr{border-color:var(--warm);background:#1D1710;color:var(--warm)}
-  .b.o{border-color:#5A6268;font-weight:600}
-  .ar{color:#4A5359;flex:0 0 auto}
-  .stage p{margin:11px 0 0;font-size:14.5px;color:var(--dim);max-width:62ch}
-
-  .key{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px;
-       font:500 11px/1 ui-monospace,Menlo,monospace;color:var(--dim)}
-  .key i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;
-         vertical-align:-1px;border:1px solid}
-  .k1{border-color:#3B4248;border-style:dashed}
-  .k2{border-color:var(--accent);background:#122020}
-  .k3{border-color:var(--warm);background:#1D1710}
-
   /* ── results ── */
   .asset{margin-top:40px}
   .ah{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:10px;
@@ -103,68 +77,6 @@
     backbone.
   </p>
 </header>
-
-<section class="wide">
-  <div class="col"><h2>Model</h2></div>
-
-  <div class="wide">
-    <div class="stage">
-      <div class="stage-h">1 &middot; Shape
-        <small>runs once per object</small></div>
-      <div>
-        <div class="chain">
-          <span class="b">point cloud</span><span class="ar">&rarr;</span>
-          <span class="b fz">VAE encoder</span><span class="ar">&rarr;</span>
-          <span class="b fz">latent 2048&times;1024</span><span class="ar">&rarr;</span>
-          <span class="b fz">16 self-attn blocks</span><span class="ar">&rarr;</span>
-          <span class="b o">KV cache</span>
-        </div>
-        <p>The backbone is used exactly as trained. The cache does not depend on the
-           prompts, so it is built once and reused for every part and every query.</p>
-      </div>
-    </div>
-
-    <div class="stage">
-      <div class="stage-h">2 &middot; Prompts
-        <small>one click per part</small></div>
-      <div>
-        <div class="chain">
-          <span class="b pr">K points per part</span><span class="ar">&rarr;</span>
-          <span class="b pr">Fourier + MLP</span><span class="ar">&rarr;</span>
-          <span class="b tr">2&times; grounding block</span><span class="ar">&rarr;</span>
-          <span class="b o">N part tokens</span>
-        </div>
-        <p>Each prompt cross-attends the KV cache until it stands for
-           <em>the part containing this point</em> rather than a bare coordinate.</p>
-      </div>
-    </div>
-
-    <div class="stage">
-      <div class="stage-h">3 &middot; Query
-        <small>per grid point</small></div>
-      <div>
-        <div class="chain">
-          <span class="b">point x</span><span class="ar">&rarr;</span>
-          <span class="b fz">frozen readout</span><span class="ar">&rarr;</span>
-          <span class="b o">inside / outside</span>
-          <span style="width:14px"></span>
-          <span class="ar">&darr;</span>
-          <span class="b tr">3&times; part extractor</span><span class="ar">&rarr;</span>
-          <span class="b o">softmax over N parts</span>
-        </div>
-        <p>A query is scored against all N part tokens at once. Because the parts compete
-           in one softmax, the result is a partition by construction &mdash; no gaps, no
-           overlaps, nothing to merge afterwards.</p>
-      </div>
-    </div>
-
-    <div class="key col" style="margin-left:0">
-      <span><i class="k1"></i>frozen &mdash; 242.7M</span>
-      <span><i class="k2"></i>trainable &mdash; 64.3M (21%)</span>
-      <span><i class="k3"></i>prompt path</span>
-    </div>
-  </div>
-</section>
 
 <section class="wide">
   <div class="col">
