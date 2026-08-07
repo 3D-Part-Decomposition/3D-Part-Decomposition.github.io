@@ -6,4 +6,4 @@ Project page for prompt-driven multi-part SDF decomposition on a frozen TripoSG 
 - `assets/overfit/<sha>/{input,whole,ours,gt}.glb` — decimated meshes for the viewer
 - `sam3d-gallery/` — the earlier 2D-segmentation gallery, kept rather than deleted
 
-Code: https://github.com/3D-Part-Decomposition/ShangYang/tree/multipart-sdf
+Code: https://github.com/henrytsui000/ShangYang/tree/multipart-sdf

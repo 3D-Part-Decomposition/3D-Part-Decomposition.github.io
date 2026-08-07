@@ -3,229 +3,188 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prompt-driven multi-part SDF decomposition</title>
-<meta name="description" content="Decomposing a 3D shape into parts from one click per part, on a frozen TripoSG shape VAE.">
+<title>3D Part Decomposition</title>
+<meta name="description" content="Decomposing a 3D shape into parts from one click per part, on a frozen shape VAE.">
 <style>
   :root{
     --bg:#0F1113; --panel:#16191C; --line:#242A2E; --ink:#E6E9EA; --dim:#8E979C;
-    --accent:#5FB0BC;        /* trainable / ours */
-    --frozen:#7A8288;        /* frozen backbone */
-    --warm:#D2894A;          /* prompts */
-    --measure:70ch;
+    --accent:#5FB0BC; --frozen:#79838A; --warm:#D2894A;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
   body{
     margin:0;background:var(--bg);color:var(--ink);
-    font:400 16px/1.65 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
-    -webkit-font-smoothing:antialiased;padding:0 22px 100px;
+    font:400 16px/1.62 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    -webkit-font-smoothing:antialiased;padding:0 26px 100px;
   }
-  .wrap{max-width:var(--measure);margin:0 auto}
-  .wide{max-width:1220px;margin:0 auto}
-  code,.mono{font-family:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace}
+  .col{max-width:74ch;margin:0 auto}
+  .wide{max-width:1280px;margin:0 auto}
+  code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.88em}
 
-  header{padding:78px 0 0}
-  .eyebrow{font:500 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;
-           text-transform:uppercase;color:var(--dim);display:flex;gap:16px;flex-wrap:wrap}
-  h1{font:400 41px/1.14 "Iowan Old Style",Palatino,Georgia,serif;letter-spacing:-.015em;
-     margin:20px 0 0;text-wrap:balance}
-  .stand{color:var(--dim);font-size:18.5px;margin:18px 0 0;text-wrap:pretty}
+  header{padding:80px 0 0}
+  .eyebrow{font:500 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.19em;
+           text-transform:uppercase;color:var(--dim)}
+  h1{font:400 43px/1.12 "Iowan Old Style",Palatino,Georgia,serif;letter-spacing:-.016em;
+     margin:18px 0 0;text-wrap:balance}
+  .stand{color:var(--dim);font-size:19px;margin:20px 0 0;text-wrap:pretty}
   .stand b{color:var(--ink);font-weight:600}
-  hr{border:0;border-top:1px solid var(--line);margin:46px 0}
 
-  h2{font:500 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;
-     color:var(--dim);margin:0 0 14px;padding-bottom:11px;border-bottom:1px solid var(--line)}
-  section{margin-top:62px}
-  p{margin:15px 0 0;text-wrap:pretty}
+  h2{font:500 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.19em;text-transform:uppercase;
+     color:var(--dim);margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  section{margin-top:74px}
+  p{margin:14px 0 0;text-wrap:pretty}
 
-  /* ── architecture ── */
-  .arch{background:var(--panel);border:1px solid var(--line);border-radius:10px;
-        padding:26px 24px;margin-top:24px;overflow-x:auto}
-  .lane{display:flex;align-items:center;gap:9px;flex-wrap:nowrap;min-width:max-content}
-  .lane+.lane{margin-top:11px}
-  .tag{font:500 10px/1 ui-monospace,Menlo,monospace;letter-spacing:.13em;text-transform:uppercase;
-       color:var(--dim);width:9ch;flex:0 0 9ch}
-  .n{font:500 12.5px/1.3 ui-monospace,Menlo,monospace;padding:8px 11px;border-radius:5px;
-     border:1px solid var(--line);background:#12161A;white-space:nowrap;color:var(--ink)}
-  .n.fz{border-color:#3A4147;color:var(--frozen);border-style:dashed}
-  .n.tr{border-color:var(--accent);color:var(--accent);background:#12211F}
-  .n.pr{border-color:var(--warm);color:var(--warm);background:#1E1710}
-  .n.out{border-color:var(--ink);font-weight:600}
-  .ar{color:#4C555B;font-size:14px;flex:0 0 auto}
-  .dimtxt{font:500 10.5px/1.4 ui-monospace,Menlo,monospace;color:#666E73;white-space:nowrap}
-  .key{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;
+  /* ── architecture: three stacked stages, each one line ── */
+  .stage{display:grid;grid-template-columns:15ch 1fr;gap:22px;align-items:start;
+         padding:22px 0;border-top:1px solid var(--line)}
+  .stage:last-of-type{border-bottom:1px solid var(--line)}
+  .stage-h{font:500 12px/1.45 ui-monospace,Menlo,monospace;letter-spacing:.1em;
+           text-transform:uppercase;color:var(--ink);padding-top:9px}
+  .stage-h small{display:block;text-transform:none;letter-spacing:0;color:var(--dim);
+                 font-size:11px;margin-top:5px}
+  .chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .b{font:500 12.5px/1.35 ui-monospace,Menlo,monospace;padding:9px 12px;border-radius:5px;
+     border:1px solid var(--line);background:#12161A;white-space:nowrap}
+  .b.fz{border-style:dashed;border-color:#3B4248;color:var(--frozen)}
+  .b.tr{border-color:var(--accent);background:#122020;color:var(--accent)}
+  .b.pr{border-color:var(--warm);background:#1D1710;color:var(--warm)}
+  .b.o{border-color:#5A6268;font-weight:600}
+  .ar{color:#4A5359;flex:0 0 auto}
+  .stage p{margin:11px 0 0;font-size:14.5px;color:var(--dim);max-width:62ch}
+
+  .key{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px;
        font:500 11px/1 ui-monospace,Menlo,monospace;color:var(--dim)}
-  .key i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;
+  .key i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;
          vertical-align:-1px;border:1px solid}
-  .key .kf{border-color:#3A4147;border-style:dashed}
-  .key .kt{border-color:var(--accent);background:#12211F}
-  .key .kp{border-color:var(--warm);background:#1E1710}
-
-  table{border-collapse:collapse;width:100%;margin-top:22px;
-        font:400 13.5px/1.5 ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
-  th{text-align:left;font-weight:500;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
-     color:var(--dim);padding:0 18px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
-  td{padding:9px 18px 9px 0;border-bottom:1px solid var(--line)}
-  td.num{text-align:right;padding-right:26px}
-  tr:last-child td{border-bottom:0}
-  .tw{overflow-x:auto}
+  .k1{border-color:#3B4248;border-style:dashed}
+  .k2{border-color:var(--accent);background:#122020}
+  .k3{border-color:var(--warm);background:#1D1710}
 
   /* ── results ── */
-  .ctl{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 78%,transparent);
-       padding:14px 0 16px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;
-       font:500 12px/1 ui-monospace,Menlo,monospace;color:var(--dim)}
-  .ctl input[type=range]{width:170px;accent-color:var(--accent);vertical-align:middle}
-  .val{color:var(--accent);min-width:3.4ch;display:inline-block}
-  .asset{margin-top:34px}
-  .ah{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
-      font:500 12.5px/1 ui-monospace,Menlo,monospace;color:var(--dim);
-      padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .asset{margin-top:40px}
+  .ah{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:10px;
+      border-bottom:1px solid var(--line);
+      font:500 12.5px/1 ui-monospace,Menlo,monospace;color:var(--dim)}
   .ah b{color:var(--ink)}
+  .ah label{display:inline-flex;align-items:center;gap:7px;font-size:11.5px}
+  .ah input[type=range]{width:112px;accent-color:var(--accent);vertical-align:middle}
+  .ah .v{color:var(--accent);min-width:3.2ch;display:inline-block}
+  .ah .sp{margin-left:auto;font-size:11px;color:#5C656A}
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
   .cell{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px}
   .cell.ours{border-color:var(--accent)}
-  .cn{font:500 10.5px/1.3 ui-monospace,Menlo,monospace;letter-spacing:.06em;
-      text-transform:uppercase;color:var(--dim);margin-bottom:6px;height:1.3em}
+  .cn{font:500 10.5px/1.3 ui-monospace,Menlo,monospace;letter-spacing:.07em;
+      text-transform:uppercase;color:var(--dim);margin-bottom:7px}
   .cell.ours .cn{color:var(--accent)}
-  canvas{width:100%;aspect-ratio:1/1;display:block;background:#0B0D0F;border-radius:5px}
+  canvas{width:100%;aspect-ratio:1/1;display:block;background:#0B0D0F;border-radius:5px;
+         cursor:grab;touch-action:none}
+  canvas:active{cursor:grabbing}
 
-  footer{margin-top:80px;padding-top:22px;border-top:1px solid var(--line);
-         font:400 13px/1.7 ui-monospace,Menlo,monospace;color:var(--dim)}
+  footer{margin-top:86px;padding-top:24px;border-top:1px solid var(--line);
+         font:400 13px/1.75 ui-monospace,Menlo,monospace;color:var(--dim)}
   a{color:var(--accent);text-underline-offset:2px}
   a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-  @media (max-width:900px){
+  @media (max-width:980px){
     .grid{grid-template-columns:repeat(2,1fr)}
-    h1{font-size:31px}body{font-size:15px}
+    .stage{grid-template-columns:1fr;gap:10px}
+    h1{font-size:32px}body{font-size:15px}
   }
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 
-<header class="wrap">
-  <div class="eyebrow"><span>3D Part Decomposition</span><span>Work in progress</span></div>
-  <h1>Decomposing a shape into parts from one click per part</h1>
+<header class="col">
+  <div class="eyebrow">3D Part Decomposition</div>
+  <h1>Splitting a shape into parts, one click per part</h1>
   <p class="stand">
-    A frozen <b>TripoSG</b> shape VAE supplies the geometry. On top of it, a small
-    trainable head turns <b>a single surface point per part</b> into a clean partition of
-    the object&rsquo;s interior &mdash; no part templates, no fixed part vocabulary, and no
-    change to the backbone that produced the shape.
+    A frozen shape VAE supplies the geometry. A small trainable head turns
+    <b>a single surface point per part</b> into a clean partition of the object&rsquo;s
+    interior &mdash; no part templates, no fixed vocabulary, and no change to the
+    backbone.
   </p>
 </header>
 
-<hr class="wrap">
+<section class="wide">
+  <div class="col"><h2>Model</h2></div>
 
-<div class="wrap">
+  <div class="wide">
+    <div class="stage">
+      <div class="stage-h">1 &middot; Shape
+        <small>runs once per object</small></div>
+      <div>
+        <div class="chain">
+          <span class="b">point cloud</span><span class="ar">&rarr;</span>
+          <span class="b fz">VAE encoder</span><span class="ar">&rarr;</span>
+          <span class="b fz">latent 2048&times;1024</span><span class="ar">&rarr;</span>
+          <span class="b fz">16 self-attn blocks</span><span class="ar">&rarr;</span>
+          <span class="b o">KV cache</span>
+        </div>
+        <p>The backbone is used exactly as trained. The cache does not depend on the
+           prompts, so it is built once and reused for every part and every query.</p>
+      </div>
+    </div>
 
-<section>
-  <h2>Architecture</h2>
+    <div class="stage">
+      <div class="stage-h">2 &middot; Prompts
+        <small>one click per part</small></div>
+      <div>
+        <div class="chain">
+          <span class="b pr">K points per part</span><span class="ar">&rarr;</span>
+          <span class="b pr">Fourier + MLP</span><span class="ar">&rarr;</span>
+          <span class="b tr">2&times; grounding block</span><span class="ar">&rarr;</span>
+          <span class="b o">N part tokens</span>
+        </div>
+        <p>Each prompt cross-attends the KV cache until it stands for
+           <em>the part containing this point</em> rather than a bare coordinate.</p>
+      </div>
+    </div>
 
-  <p>
-    The backbone is used exactly as it was trained: the encoder turns a surface point
-    cloud into an unordered latent token set, and 16 self-attention blocks refine it into
-    a key/value cache that a query point can cross-attend for a signed distance. All of
-    that stays frozen.
-  </p>
-  <p>
-    What we add is a second read of the same cache. Each prompt point is embedded and then
-    <em>grounded</em> &mdash; it cross-attends the latent to become a token that stands for
-    &ldquo;the part containing this point&rdquo;. A query point is then scored against every
-    grounded prompt at once, and a softmax over parts assigns it to exactly one. Because the
-    parts compete in a single softmax, the decomposition is a partition by construction:
-    no gaps, no overlaps, no post-hoc merging.
-  </p>
+    <div class="stage">
+      <div class="stage-h">3 &middot; Query
+        <small>per grid point</small></div>
+      <div>
+        <div class="chain">
+          <span class="b">point x</span><span class="ar">&rarr;</span>
+          <span class="b fz">frozen readout</span><span class="ar">&rarr;</span>
+          <span class="b o">inside / outside</span>
+          <span style="width:14px"></span>
+          <span class="ar">&darr;</span>
+          <span class="b tr">3&times; part extractor</span><span class="ar">&rarr;</span>
+          <span class="b o">softmax over N parts</span>
+        </div>
+        <p>A query is scored against all N part tokens at once. Because the parts compete
+           in one softmax, the result is a partition by construction &mdash; no gaps, no
+           overlaps, nothing to merge afterwards.</p>
+      </div>
+    </div>
 
-  <div class="arch wide">
-    <div class="lane">
-      <span class="tag">Shape</span>
-      <span class="n">surface point cloud</span><span class="ar">&rarr;</span>
-      <span class="n fz">VAE encoder</span><span class="ar">&rarr;</span>
-      <span class="n fz">latent 2048&times;1024</span><span class="ar">&rarr;</span>
-      <span class="n fz">decoder blocks 0&ndash;15</span><span class="ar">&rarr;</span>
-      <span class="n out">kv cache</span>
-      <span class="dimtxt">&nbsp;prompt-independent &mdash; built once</span>
-    </div>
-    <div class="lane">
-      <span class="tag">Prompts</span>
-      <span class="n pr">K points per part</span><span class="ar">&rarr;</span>
-      <span class="n pr">Fourier + MLP</span><span class="ar">&rarr;</span>
-      <span class="n tr">refine &times;2</span>
-      <span class="dimtxt">cross-attend kv &rarr; self-attn &rarr; FFN</span>
-      <span class="ar">&rarr;</span>
-      <span class="n out">grounded tokens N&times;1024</span>
-    </div>
-    <div class="lane">
-      <span class="tag">Query</span>
-      <span class="n">point x</span><span class="ar">&rarr;</span>
-      <span class="n fz">Fourier</span><span class="ar">&rarr;</span>
-      <span class="n fz">block[-1] &rarr; whole SDF</span>
-      <span class="dimtxt">unchanged TripoSG path</span>
-    </div>
-    <div class="lane">
-      <span class="tag"></span>
-      <span class="ar">&rarr;</span>
-      <span class="n tr">part extractor &times;3</span>
-      <span class="dimtxt">query &oplus; &alpha;&sdot;prompt, cross-attend kv</span>
-      <span class="ar">&rarr;</span>
-      <span class="n out">logits Q&times;N</span><span class="ar">&rarr;</span>
-      <span class="n out">softmax over parts</span>
-    </div>
-    <div class="key">
-      <span><i class="kf"></i>frozen (242.7M)</span>
-      <span><i class="kt"></i>trainable (64.3M)</span>
-      <span><i class="kp"></i>prompt path</span>
+    <div class="key col" style="margin-left:0">
+      <span><i class="k1"></i>frozen &mdash; 242.7M</span>
+      <span><i class="k2"></i>trainable &mdash; 64.3M (21%)</span>
+      <span><i class="k3"></i>prompt path</span>
     </div>
   </div>
-
-  <div class="tw">
-  <table>
-    <thead><tr><th>Component</th><th class="num">Params</th><th>Role</th></tr></thead>
-    <tbody>
-      <tr><td>TripoSG VAE</td><td class="num">242.7M</td><td>frozen &mdash; latent + whole SDF</td></tr>
-      <tr><td>refine blocks &times;2</td><td class="num">25.2M</td><td>ground prompts against the latent</td></tr>
-      <tr><td>part extractor &times;3</td><td class="num">38.1M</td><td>score query against every part</td></tr>
-      <tr><td>prompt MLP</td><td class="num">1.1M</td><td>embed prompt coordinates</td></tr>
-      <tr><td><b>trainable total</b></td><td class="num"><b>64.3M</b></td><td>21% of the model</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <p>
-    Two training terms matter beyond the per-point classification loss. A <b>soft-IoU
-    (dice)</b> term pushes each part to come out as one connected piece rather than a
-    scatter of fragments. A <b>consistency</b> term draws two independent prompt draws of
-    the same part toward the same grounded token while pushing different parts apart, so
-    the answer barely moves when the user clicks somewhere else on the same part.
-  </p>
 </section>
-
-</div>
 
 <section class="wide">
-  <div class="wrap"><h2>Overfitting experiment</h2>
-  <p>
-    Thirteen assets, 16k steps, dice weight 1.0, and <b>one prompt point per part at
-    inference</b>. This measures how well the head can represent a decomposition at all,
-    with generalisation deliberately taken out of the picture. Drag any view to orbit the
-    whole row; the explode slider pulls the parts apart so interiors are visible.
-  </p></div>
-
-  <div class="ctl wide">
-    <label>explode <input type="range" id="ex" min="0" max="1.5" step="0.05" value="0">
-      <span class="val" id="exv">0.00</span></label>
-    <label>zoom <input type="range" id="zm" min="1.2" max="4" step="0.1" value="2.1"></label>
-    <span>drag a view to orbit its whole row</span>
+  <div class="col">
+    <h2>Overfitting experiment</h2>
+    <p>
+      Thirteen assets, 16k steps, and <b>one prompt point per part at inference</b> &mdash;
+      generalisation deliberately taken out of the picture, so what is left is how well the
+      head can represent a decomposition at all.
+    </p>
   </div>
 
-  <div id="assets" class="wide"></div>
+  <div id="assets"></div>
 </section>
 
-<footer class="wrap">
-  Frozen backbone: <a href="https://github.com/VAST-AI-Research/TripoSG">TripoSG</a> /
-  <a href="https://github.com/VAST-AI-Research/HoloPart">HoloPart</a> VAE.
-  Code: <a href="https://github.com/3D-Part-Decomposition/ShangYang/tree/multipart-sdf">ShangYang @ multipart-sdf</a>.
-  The earlier 2D-segmentation gallery is still at <a href="sam3d-gallery/">sam3d-gallery/</a>.
+<footer class="col">
+  Backbone: the <a href="https://github.com/VAST-AI-Research/TripoSG">TripoSG</a> VAE
+  architecture with the <a href="https://github.com/VAST-AI-Research/HoloPart">HoloPart</a>
+  released weights, frozen throughout.<br>
+  Code: <a href="https://github.com/henrytsui000/ShangYang/tree/multipart-sdf">ShangYang @ multipart-sdf</a>
+  &middot; earlier 2D-segmentation gallery: <a href="sam3d-gallery/">sam3d-gallery/</a>
 </footer>
 
 <script type="importmap">
@@ -237,7 +196,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 const COLS = [
-  ["input", "Input mesh",      false],
+  ["input", "Input mesh",       false],
   ["whole", "Whole SDF output", false],
   ["ours",  "Ours",             true ],
   ["gt",    "Ground truth",     false],
@@ -246,21 +205,35 @@ const COLS = [
 const manifest = await (await fetch('assets/overfit/manifest.json')).json();
 const host = document.getElementById('assets');
 for (const a of manifest) {
-  const sec = document.createElement('div');
-  sec.className = 'asset';
-  sec.innerHTML =
-    `<div class="ah"><b>${a.sha}</b><span>${a.n_parts} parts</span></div>
+  const d = document.createElement('div');
+  d.className = 'asset';
+  d.innerHTML =
+    `<div class="ah"><b>${a.sha}</b><span>${a.n_parts} parts</span>
+       <label>explode
+         <input type="range" data-ex="${a.sha}" min="0" max="1.5" step="0.05" value="0">
+         <span class="v" data-exv="${a.sha}">0.00</span></label>
+       <label>zoom
+         <input type="range" data-zm="${a.sha}" min="1.2" max="4" step="0.1" value="2.1"></label>
+       <span class="sp">drag a view to orbit this asset</span></div>
      <div class="grid">` +
     COLS.map(([k, lab, ours]) =>
       `<div class="cell${ours ? ' ours' : ''}"><div class="cn">${lab}</div>
        <canvas data-src="assets/overfit/${a.sha}/${k}.glb" data-row="${a.sha}"></canvas></div>`
     ).join('') + `</div>`;
-  host.appendChild(sec);
+  host.appendChild(d);
 }
 
 const R = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
 R.setPixelRatio(1);
 const loader = new GLTFLoader(), tiles = [], rows = new Map();
+
+// Explode and zoom are PER ASSET: comparing four columns of one object is the point,
+// and a page-wide slider forced every other asset to move with it.
+function row(key){
+  if (!rows.has(key))
+    rows.set(key, {theta:Math.PI*0.25, phi:Math.PI*0.36, zoom:2.1, ex:0, drag:null});
+  return rows.get(key);
+}
 
 function makeScene(){
   const s = new THREE.Scene(); s.background = new THREE.Color(0x0B0D0F);
@@ -271,12 +244,10 @@ function makeScene(){
 }
 
 function init(cv){
-  const key = cv.dataset.row;
-  if (!rows.has(key)) rows.set(key, {theta:Math.PI*0.25, phi:Math.PI*0.36, drag:null});
-  const st = rows.get(key);
+  const st = row(cv.dataset.row);
   const ctx = cv.getContext('2d'), scene = makeScene();
   const cam = new THREE.PerspectiveCamera(38, 1, .01, 100);
-  const T = {cv, ctx, scene, cam, key, parts:[], cur:0, tgt:0, r:1, loaded:false};
+  const T = {cv, ctx, scene, cam, key: cv.dataset.row, parts:[], cur:0, r:1, loaded:false};
   tiles.push(T);
 
   cv.addEventListener('pointerdown', e => {
@@ -284,8 +255,8 @@ function init(cv){
   });
   cv.addEventListener('pointermove', e => {
     if (!st.drag) return;
-    st.theta -= (e.clientX - st.drag[0]) * 0.008;
-    st.phi = Math.max(.06, Math.min(Math.PI - .06, st.phi - (e.clientY - st.drag[1]) * 0.008));
+    st.theta -= (e.clientX - st.drag[0]) * .008;
+    st.phi = Math.max(.06, Math.min(Math.PI - .06, st.phi - (e.clientY - st.drag[1]) * .008));
     st.drag = [e.clientX, e.clientY];
   });
   for (const ev of ['pointerup','pointercancel','pointerleave'])
@@ -322,12 +293,13 @@ function draw(T){
   const w = T.cv.clientWidth | 0, h = T.cv.clientHeight | 0;
   if (!w || !h) return;
   if (T.cv.width !== w || T.cv.height !== h) { T.cv.width = w; T.cv.height = h; }
-  if (Math.abs(T.cur - T.tgt) > .001) {
-    T.cur += (T.tgt - T.cur) * .15;
+  const st = rows.get(T.key);
+  if (Math.abs(T.cur - st.ex) > .001) {
+    T.cur += (st.ex - T.cur) * .15;
     for (const p of T.parts)
       p.mesh.position.copy(p.base).add(p.dir.clone().multiplyScalar(T.cur * 1.6));
   }
-  const st = rows.get(T.key), Rd = T.r * parseFloat(zm.value);
+  const Rd = T.r * st.zoom;
   T.cam.position.set(Rd*Math.sin(st.phi)*Math.sin(st.theta), Rd*Math.cos(st.phi),
                      Rd*Math.sin(st.phi)*Math.cos(st.theta));
   T.cam.lookAt(0,0,0);
@@ -337,14 +309,17 @@ function draw(T){
 }
 function loop(){ for (const T of tiles) if (T.loaded) draw(T); requestAnimationFrame(loop); }
 
-const ex = document.getElementById('ex'), exv = document.getElementById('exv'),
-      zm = document.getElementById('zm');
-ex.addEventListener('input', () => {
-  exv.textContent = (+ex.value).toFixed(2);
-  for (const T of tiles) T.tgt = +ex.value;
-});
+for (const s of document.querySelectorAll('input[data-ex]')) {
+  s.addEventListener('input', () => {
+    const k = s.dataset.ex; row(k).ex = +s.value;
+    document.querySelector(`[data-exv="${CSS.escape(k)}"]`).textContent = (+s.value).toFixed(2);
+  });
+}
+for (const s of document.querySelectorAll('input[data-zm]')) {
+  s.addEventListener('input', () => { row(s.dataset.zm).zoom = +s.value; });
+}
 
-// only build a GL context for tiles that are actually on screen
+// build a GL context only for tiles scrolled into view
 const io = new IntersectionObserver(es => {
   for (const e of es) if (e.isIntersecting && !e.target.dataset.i) {
     e.target.dataset.i = 1; init(e.target);
